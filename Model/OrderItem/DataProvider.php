@@ -55,6 +55,8 @@ class DataProvider
      */
     private $orderItemList = [];
 
+    protected $_productRepositoryFactory;
+
     /**
      * @param OrderItemRepositoryInterface $orderItemRepository
      * @param ProductRepositoryInterface $productRepository
@@ -67,13 +69,15 @@ class DataProvider
         ProductRepositoryInterface $productRepository,
         OrderRepositoryInterface $orderRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        OptionsProcessor $optionsProcessor
+        OptionsProcessor $optionsProcessor,
+        \Magento\Catalog\Api\ProductRepositoryInterfaceFactory $productRepositoryFactory
     ) {
         $this->orderItemRepository = $orderItemRepository;
         $this->productRepository = $productRepository;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->optionsProcessor = $optionsProcessor;
+        $this->_productRepositoryFactory = $productRepositoryFactory;
     }
 
     /**
@@ -129,6 +133,8 @@ class DataProvider
             /** @var OrderInterface $associatedOrder */
             $associatedOrder = $orderList[$orderItem->getOrderId()];
             $itemOptions = $this->optionsProcessor->getItemOptions($orderItem);
+            $product = $this->_productRepositoryFactory->create()->get($orderItem->getSku());
+            $image = $product->getData('image');
             $this->orderItemList[$orderItem->getItemId()] = [
                 'id' => base64_encode($orderItem->getItemId()),
                 'associatedProduct' => $associatedProduct,
@@ -150,7 +156,8 @@ class DataProvider
                 'quantity_refunded' => $orderItem->getQtyRefunded(),
                 'quantity_invoiced' => $orderItem->getQtyInvoiced(),
                 'quantity_canceled' => $orderItem->getQtyCanceled(),
-                'quantity_returned' => $orderItem->getQtyReturned()
+                'quantity_returned' => $orderItem->getQtyReturned(),
+                'product_image' => $image
             ];
         }
 

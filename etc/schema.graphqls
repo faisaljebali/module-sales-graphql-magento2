@@ -95,6 +95,7 @@ interface OrderItemInterface @doc(description: "Order item details") @typeResolv
     quantity_invoiced: Float @doc(description: "The number of invoiced items")
     quantity_canceled: Float @doc(description: "The number of canceled items")
     quantity_returned: Float @doc(description: "The number of returned items")
+    product_image: String! @doc(description: "The Image of the base product")
 }
 
 type OrderItem implements OrderItemInterface {
